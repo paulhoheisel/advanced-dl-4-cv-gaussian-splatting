@@ -1,4 +1,21 @@
-# 3D Gaussian Splatting for Real-Time Radiance Field Rendering
+# Adaptive Spherical Harmonics for 3D Gaussian Splatting
+
+**Research project by Paul Hoheisel and [bingoopa](https://github.com/bingoopa)**
+
+**Focus:** Adaptive per-Gaussian appearance modeling in 3D Gaussian Splatting
+
+This project extends the [official Graphdeco-Inria implementation](https://github.com/graphdeco-inria/gaussian-splatting) of *3D Gaussian Splatting for Real-Time Radiance Field Rendering*. We explored allocating spherical-harmonic (SH) appearance capacity per Gaussian, rather than assigning every Gaussian the same maximum SH degree. The goal was to study whether gradient-guided allocation can represent view-dependent color efficiently while preserving reconstruction quality.
+
+### Project work
+
+- **Adaptive SH selection:** Added color-gradient collection and visualization, then used those signals to promote selected Gaussians to higher SH degrees during training. Training schedules control when and how much capacity is added.
+- **Variable-length SH storage:** Implemented compact packed storage for per-Gaussian SH coefficients, with operations for increasing degree, cloning, pruning, and PLY model persistence.
+- **Training and renderer integration:** Connected the adaptive representation to Gaussian densification and optimization, including optimizer-state handling when the packed parameter changes. The project also integrates packed SH data with the CUDA rasterizer.
+- **Experiments and diagnostics:** Added schedule sweeps, SH-degree distribution tracking, and evaluation hooks for PSNR, SSIM, and LPIPS. Results are recorded for comparison; this repository presents an experimental implementation, not a claim of benchmark improvement.
+
+The main implementation is in [`train.py`](train.py), [`scene/gaussian_model.py`](scene/gaussian_model.py), and [`scene/sh_storage_new.py`](scene/sh_storage_new.py), with rasterizer changes under [`submodules/diff-gaussian-rasterization`](submodules/diff-gaussian-rasterization/). This work is a research prototype built on the paper authors' code; the original paper description, citation, and upstream usage documentation follow.
+
+## Original Paper: 3D Gaussian Splatting for Real-Time Radiance Field Rendering
 Bernhard Kerbl*, Georgios Kopanas*, Thomas Leimkühler, George Drettakis (* indicates equal contribution)<br>
 | [Webpage](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/) | [Full Paper](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/3d_gaussian_splatting_high.pdf) | [Video](https://youtu.be/T_kXY43VZnk) | [Other GRAPHDECO Publications](http://www-sop.inria.fr/reves/publis/gdindex.php) | [FUNGRAPH project page](https://fungraph.inria.fr) |<br>
 | [T&T+DB COLMAP (650MB)](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/input/tandt_db.zip) | [Pre-trained Models (14 GB)](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/pretrained/models.zip) | [Viewers for Windows (60MB)](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/binaries/viewers.zip) | [Evaluation Images (7 GB)](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/evaluation/images.zip) |<br>
